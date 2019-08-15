@@ -9,6 +9,6 @@ Within each floor, the goal of the agent is to arrive at the set of stairs leadi
 * Angus Mackenzie
 
 # Resources
-[Github](https://github.com/Unity-Technologies/obstacletower-env)
-[Blog](https://blogs.unity3d.com/2019/02/18/the-obstacletower-challenge-is-live/)
-[Video](https://www.youtube.com/watch?v=xG25iKLCuAc)
+* [Github](https://github.com/Unity-Technologies/obstacletower-env)
+* [Blog](https://blogs.unity3d.com/2019/02/18/the-obstacletower-challenge-is-live/)
+* [Video](https://www.youtube.com/watch?v=xG25iKLCuAc)
