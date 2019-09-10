@@ -9,6 +9,14 @@ Within each floor, the goal of the agent is to arrive at the set of stairs leadi
 * Angus Mackenzie
 * Africa Khoza
 
+# Todo
+- [ ] Create correct requirements.txt file to install cross platform 🤷‍♂
+- [ ] Create Different Agents (with literally any model)
+- [ ] Compare to Random Agent
+- [ ] Win
+- [ ] Create video explaining process
+
+
 # Resources
 * [Github](https://github.com/Unity-Technologies/obstacletower-env)
 * [Blog](https://blogs.unity3d.com/2019/02/18/the-obstacletower-challenge-is-live/)
