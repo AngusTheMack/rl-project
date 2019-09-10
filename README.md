@@ -7,6 +7,7 @@ Within each floor, the goal of the agent is to arrive at the set of stairs leadi
 * Nishai Kooverjee
 * Kenan Karavoussanos
 * Angus Mackenzie
+* Africa Khoza
 
 # Resources
 * [Github](https://github.com/Unity-Technologies/obstacletower-env)
