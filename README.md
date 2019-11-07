@@ -12,3 +12,4 @@ conda env export > environment.yml
 * Nishai Kooverjee
 * Kenan Karavoussanos
 * Angus Mackenzie
+* Africa Khoza
