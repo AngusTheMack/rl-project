@@ -12,11 +12,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--env",choices=['boxing','enduro','breakout'] ,help="The environment the experiment will be run with, default is boxing", default='boxing')
 args = parser.parse_args()
 if __name__ == "__main__":
-    env_name = "Boxing-ramNoFrameskip-v4" # Set Default
+    env_name = "BoxingNoFrameskip-v4" # Set Default
     if args.env=='breakout':
         env_name = 'BreakoutNoFrameskip-v4'
     elif args.env == 'enduro':
-        env_name = 'Enduro-ramNoFrameskip-v4'
+        env_name = 'EnduroNoFrameskip-v4'
 
     if not os.path.exists("results/"):
         os.makedirs("results")
