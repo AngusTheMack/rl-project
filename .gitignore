@@ -53,3 +53,5 @@ Thumbs.db
 *.toc
 *.lof
 *.lot%                                                                                                                                                                                 
+
+__pycache__
