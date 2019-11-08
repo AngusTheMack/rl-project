@@ -122,3 +122,5 @@ if __name__ == "__main__":
             print("********************************************************")
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc,"checkpoint.pth"))
             np.savetxt(os.path.join(save_loc, "rewards.csv"), episode_rewards, delimiter=",")
+    torch.save(agent.policy_network.state_dict(), os.path.join(save_loc,"checkpoint.pth"))
+    np.savetxt(os.path.join(save_loc, "rewards.csv"), episode_rewards, delimiter=",")
