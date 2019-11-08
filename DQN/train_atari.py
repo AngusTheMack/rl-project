@@ -7,11 +7,18 @@ from dqn.agent import DQNAgent
 from dqn.replay_buffer import ReplayBuffer
 from dqn.wrappers import *
 import os
-parser = argparse.ArgumentParser()
-
+parser = argparse.ArgumentParser(description='DQN Atari')
+parser.add_argument('--load-checkpoint-file', type=str, default=None, help='Where checkpoint file should be loaded from (usually results/checkpoint.pth)')
 parser.add_argument("--env",choices=['boxing','enduro','breakout'] ,help="The environment the experiment will be run with, default is boxing", default='boxing')
+parser.add_argument("--save_freq",type=int, help="Save checkpoint and videos after this many episodes", default='100')
 args = parser.parse_args()
 if __name__ == "__main__":
+
+    if(args.load_checkpoint_file):
+        eps_start= 0.01
+    else:
+        eps_start= 1
+
     env_name = "BoxingNoFrameskip-v4" # Set Default
     if args.env=='breakout':
         env_name = 'BreakoutNoFrameskip-v4'
@@ -20,7 +27,7 @@ if __name__ == "__main__":
 
     if not os.path.exists("results/"):
         os.makedirs("results")
-    
+
     save_loc = "results/"+args.env+"_"+str(1)
     if os.path.exists(save_loc):
         counter = 1
@@ -70,7 +77,7 @@ if __name__ == "__main__":
     env = ClipRewardEnv(env)
     env = FrameStack(env, 4)
     env = gym.wrappers.Monitor(
-        env=env, directory=os.path.join(save_loc, "videos"), video_callable=lambda episode_id: episode_id % 100 == 0, force=True
+        env=env, directory=os.path.join(save_loc, "videos"), video_callable=lambda episode_id: episode_id % args.save_freq == 0, force=True
     )
     replay_buffer = ReplayBuffer(hyper_params["replay-buffer-size"])
 
@@ -83,7 +90,9 @@ if __name__ == "__main__":
         batch_size=hyper_params["batch-size"],
         gamma=hyper_params["discount-factor"],
     )
-
+    if(args.load_checkpoint_file):
+        print(f"Loading a policy - { args.load_checkpoint_file } ")
+        agent.policy_network.load_state_dict(torch.load(args.load_checkpoint_file))
     eps_timesteps = hyper_params["eps-fraction"] * float(hyper_params["num-steps"])
     episode_rewards = [0.0]
 
@@ -120,6 +129,7 @@ if __name__ == "__main__":
             print("mean 100 episode reward: {}".format(mean_100ep_reward))
             print("% time spent exploring: {}".format(int(100 * eps_threshold)))
             print("********************************************************")
+        if done and len(episode_rewards) % save_freq == 0:
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc,"checkpoint.pth"))
             np.savetxt(os.path.join(save_loc, "rewards.csv"), episode_rewards, delimiter=",")
     torch.save(agent.policy_network.state_dict(), os.path.join(save_loc,"checkpoint.pth"))

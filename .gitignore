@@ -52,6 +52,8 @@ Thumbs.db
 *.synctex.gz
 *.toc
 *.lof
-*.lot%                                                                                                                                                                                 
+*.lot%
 
 __pycache__
+
+DQN/results/*/videos
