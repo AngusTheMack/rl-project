@@ -93,12 +93,14 @@ if __name__ == "__main__":
     if(args.load_checkpoint_file):
         print(f"Loading a policy - { args.load_checkpoint_file } ")
         agent.policy_network.load_state_dict(torch.load(args.load_checkpoint_file))
-    eps_timesteps = hyper_params["eps-fraction"] * float(hyper_params["num-steps"])
+    eps_timesteps = hyper_params["eps-fraction"] * float(hyper_params["num-steps"]) # T
     episode_rewards = [0.0]
 
     state = env.reset()
     for t in range(hyper_params["num-steps"]):
-        fraction = min(1.0, float(t) / eps_timesteps)
+        #fraction = min(1.0, float(t) / eps_timesteps) # i/T
+        fraction_temp = float(t) / eps_timesteps # i/T
+        fraction = 1.0 - 1.0/(1.0+fraction_temp)
         eps_threshold = hyper_params["eps-start"] + fraction * (hyper_params["eps-end"] - hyper_params["eps-start"])
         sample = random.random()
         if sample > eps_threshold:
@@ -126,10 +128,11 @@ if __name__ == "__main__":
             print("********************************************************")
             print("steps: {}".format(t))
             print("episodes: {}".format(num_episodes))
+            print("learning rate: {}".format(fraction))
             print("mean 100 episode reward: {}".format(mean_100ep_reward))
             print("% time spent exploring: {}".format(int(100 * eps_threshold)))
             print("********************************************************")
-        if done and len(episode_rewards) % save_freq == 0:
+        if done and len(episode_rewards) % args.save_freq == 0:
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc,"checkpoint.pth"))
             np.savetxt(os.path.join(save_loc, "rewards.csv"), episode_rewards, delimiter=",")
     torch.save(agent.policy_network.state_dict(), os.path.join(save_loc,"checkpoint.pth"))
