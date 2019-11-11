@@ -403,8 +403,12 @@ def deep_q_learning(sess,
 
 if __name__ == "__main__":
     EpisodeStats = namedtuple("Stats",["episode_lengths", "episode_rewards"])
-
-    env = gym.envs.make(args.env)
+    env_name = "Boxing-v0" # Set Default
+    if args.env=='breakout':
+        env_name = 'Breakout-v0'
+    elif args.env == 'pinball':
+        env_name = 'VideoPinball-v0'
+    env = gym.envs.make(env_name)
 
     print(tf.__version__, "this should be 1.13  or 1.12 - 1.14 will prolly break")
 
