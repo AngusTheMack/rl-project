@@ -9,7 +9,6 @@ class ConvDuelingDQN(nn.Module):
         super(ConvDuelingDQN, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
-        self.fc_input_dim = self.feature_size()
         
         self.conv = nn.Sequential(
             nn.Conv2d(input_dim[0], 32, kernel_size=8, stride=4),
@@ -20,6 +19,7 @@ class ConvDuelingDQN(nn.Module):
             nn.ReLU()
         )
 
+        self.fc_input_dim = self.feature_size()
         self.value_stream = nn.Sequential(
             nn.Linear(self.fc_input_dim, 128),
             nn.ReLU(),
