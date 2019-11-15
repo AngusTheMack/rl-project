@@ -56,5 +56,5 @@ Thumbs.db
 
 __pycache__
 
-DQN/results/*/videos
-Double DQN/experiments/*/monitor
+environments/
+*.tar.xz
