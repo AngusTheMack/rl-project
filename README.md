@@ -3,6 +3,8 @@
 # Environment
 ### Unity Obstacle Tower [[repo link](https://github.com/Unity-Technologies/obstacle-tower-env)]
 
+The Environment is available on [On Google Drive](https://drive.google.com/drive/folders/1WuoG7HncbbKOgFJ61jOHQqgSAXbm78st?usp=sharing) use your @wits email
+
 # Packages
 - torch
 - torchvision
