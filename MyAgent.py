@@ -23,9 +23,6 @@ class MyAgent(AbstractAgent):
             batch_size=32,
             gamma=0.99,
         )
-        self.agent.policy_network.load_state_dict(torch.load("checkpoints/checkpoint.pth"))
+        self.agent.policy_network.load_state_dict(torch.load("results/experiment_1/checkpoint_3000_step.pth", map_location=torch.device(device)))
     def act(self, observation):
-        # Perform processing to observation
-        self.agent.act(observation)
-        # # TODO: return selected action
-        # return self.action_space.sample()
+        return self.agent.act(observation)

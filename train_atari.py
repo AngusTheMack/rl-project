@@ -103,8 +103,9 @@ if __name__ == "__main__":
 
         num_episodes = len(episode_rewards)
         if t % 1000 == 0:
-            print("Saving Checkpoint after",t,"steps")
+
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
+            print("Saved Checkpoint after",t,"steps")
 
         if done and hyper_params["print-freq"] is not None and len(episode_rewards) % hyper_params["print-freq"] == 0:
             mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
