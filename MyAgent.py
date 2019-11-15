@@ -20,7 +20,7 @@ class MyAgent(AbstractAgent):
             batch_size=32,
             gamma=0.99,
         )
-        self.agent.policy_network.load_state_dict(torch.load("model.pth",map_location=torch.device(device)))
+        self.agent.policy_network.load_state_dict(torch.load("results/experiment_3/checkpoint_40_eps.pth",map_location=torch.device(device)))
 
 
     def act(self, observation):

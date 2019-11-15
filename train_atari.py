@@ -57,7 +57,7 @@ if __name__ == "__main__":
     env.seed(args.seed)
     # env = WarpFrame(env)
     env = PyTorchFrame(env)
-    # env = FrameStack(env, 2)
+    env = FrameStack(env, 10)
 
     replay_buffer = ReplayBuffer(int(5e3))
 
