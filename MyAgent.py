@@ -25,7 +25,7 @@ class MyAgent(AbstractAgent):
             batch_size=32,
             gamma=0.99,
         )
-        self.agent.policy_network.load_state_dict(torch.load("checkpoint.pth",map_location=torch.device(device)))
+        self.agent.policy_network.load_state_dict(torch.load("results/experiment_2/checkpoint_210_eps.pth",map_location=torch.device(device)))
         # agent.policy_network.load_state_dict(torch.load(args.checkpoint))
     def act(self, observation):
         return self.agent.act(observation)

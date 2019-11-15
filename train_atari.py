@@ -102,7 +102,7 @@ if __name__ == "__main__":
             agent.update_target_network()
 
         num_episodes = len(episode_rewards)
-        if t % 1000 == 0:
+        if t % 10000 == 0:
 
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
             print("Saved Checkpoint after",t,"steps")
@@ -117,5 +117,5 @@ if __name__ == "__main__":
             print("********************************************************")
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(num_episodes)+"_eps.pth"))
             np.savetxt(os.path.join(save_loc,"rewards.csv"), episode_rewards, delimiter=",")
-        torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "final_checkpoint.pth"))
-        np.savetxt(os.path.join(save_loc,"rewards.csv"), episode_rewards, delimiter=",")
+    torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "final_checkpoint.pth"))
+    np.savetxt(os.path.join(save_loc,"rewards.csv"), episode_rewards, delimiter=",")

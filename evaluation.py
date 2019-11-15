@@ -38,7 +38,7 @@ if __name__ == '__main__':
     worker_id = int(np.random.randint(999, size=1))
     print(worker_id)
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True,
-                           realtime_mode=True, config=config) #greyscale=True)
+                           realtime_mode=True, config=config, greyscale=True)
 
     # Wrap the environment with the ObstacleTowerEvaluation wrapper
     # and provide evaluation seeds.
