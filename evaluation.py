@@ -1,5 +1,5 @@
 from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, ObstacleTowerEvaluation
-
+from dqn.wrappers import *
 import numpy as np
 import sys
 
@@ -7,7 +7,12 @@ import sys
 def run_episode(env):
     # create instance of MyAgent
     from MyAgent import MyAgent
-    import DQNAgent
+    # import DQNAgent
+    env = WarpFrame(env)
+    env = PyTorchFrame(env)
+    env = FrameStack(env, 2)
+    print(env.observation_space)
+    print(env.action_space)
     agent = MyAgent(env.observation_space, env.action_space)
 
     done = False

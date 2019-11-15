@@ -31,7 +31,6 @@ class DQNAgent:
         :param batch_size: the batch size
         :param gamma: the discount factor
         """
-
         self.memory = replay_buffer
         self.batch_size = batch_size
         self.use_double_dqn = use_double_dqn
