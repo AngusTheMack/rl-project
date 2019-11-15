@@ -16,8 +16,13 @@ The Environment is available on [On Google Drive](https://drive.google.com/drive
 
 # Create Conda Env from environment.yml
 
-conda env create -f environment.yml -n assignment
+conda env create -f environment.yml
 
+
+Save updated parameters to new yml file:
+```
+conda env export > environment.yml
+```
 
 # Evaluation - MyAgent
 - The MyAgent will be evaluated
