@@ -238,8 +238,7 @@ def main():
                 memory.clear_memory()
                 timestep = 0
             running_reward += reward
-            if render:
-                env.render()
+
             if done:
                 break
 
