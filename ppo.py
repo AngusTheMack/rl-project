@@ -2,8 +2,32 @@ import torch
 import torch.nn as nn
 from torch.distributions import Categorical
 import gym
-
+import numpy as np
+import random
+import argparse
+from dqn.agent import DQNAgent
+from dqn.replay_buffer import ReplayBuffer
+from dqn.wrappers import *
+from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, ObstacleTowerEvaluation
+import os
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
+HUMAN_ACTIONS = (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33)
+NUM_ACTIONS = len(HUMAN_ACTIONS)
+class HumanActionEnv(gym.ActionWrapper):
+    """
+    An environment wrapper that limits the action space to
+    looking left/right, jumping, and moving forward.
+    """
+
+    def __init__(self, env):
+        super().__init__(env)
+        self.actions = HUMAN_ACTIONS
+        self.action_space = gym.spaces.Discrete(len(self.actions))
+
+    def action(self, act):
+        return self.actions[act]
 
 class Memory:
     def __init__(self):
@@ -23,7 +47,7 @@ class Memory:
 class ActorCritic(nn.Module):
     def __init__(self, state_dim, action_dim, n_latent_var):
         super(ActorCritic, self).__init__()
-        self.affine = nn.Linear(state_dim, n_latent_var)
+
 
         # actor
         self.action_layer = nn.Sequential(
@@ -48,7 +72,8 @@ class ActorCritic(nn.Module):
         raise NotImplementedError
 
     def act(self, state, memory):
-        state = torch.from_numpy(state).float().to(device)
+        state = torch.from_numpy(state).float().to(device).flatten()
+
         action_probs = self.action_layer(state)
         dist = Categorical(action_probs)
         action = dist.sample()
@@ -127,6 +152,27 @@ class PPO:
         self.policy_old.load_state_dict(self.policy.state_dict())
 
 def main():
+
+    parser = argparse.ArgumentParser(description='PPO Atari')
+    parser.add_argument('--checkpoint', type=str, default=None, help='Where checkpoint file should be loaded from (usually results/checkpoint.pth)')
+    parser.add_argument('--seed', type=int, default=42, help='Random seed for training')
+    parser.add_argument('--lr',type=float,default=1e-4,help="learning rate")
+    # parser.add_argument('--continue', action='store_true')
+    args = parser.parse_args()
+
+    i = 0
+    if not os.path.exists("results"):
+        os.mkdir("results")
+    while True:
+        file_name = "results/experiment_"+str(i)
+        if not os.path.exists(file_name):
+            dir_to_make = file_name
+            break
+        i+=1
+
+    os.mkdir(dir_to_make)
+    save_loc = dir_to_make+"/"
+    print("Saving results to", dir_to_make)
     ############## Hyperparameters ##############
     env_name = "LunarLander-v2"
     # creating environment
@@ -138,7 +184,7 @@ def main():
     log_interval = 20           # print avg reward in the interval
     max_episodes = 50000        # max training episodes
     max_timesteps = 300         # max timesteps in one episode
-    n_latent_var = 64           # number of variables in hidden layer
+    n_latent_var = 2           # number of variables in hidden layer
     update_timestep = 2000      # update policy every n timesteps
     lr = 0.002
     betas = (0.9, 0.999)
@@ -156,17 +202,27 @@ def main():
               'allowed-floors': 0,
               }
     worker_id = int(np.random.randint(999, size=1))
-
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,
                             retro=True, realtime_mode=False, config=config, greyscale=True)
     env.seed(random_seed)
     env = PyTorchFrame(env)
-    env = FrameStack(env, 10)
+    # env = FrameStack(env, 1)
+    env = HumanActionEnv(env)
     memory = Memory()
-    print(env.observation_space.shape)
-    state_dim = 7056
+    env_shape = env.observation_space.shape
+
+    state_dim = np.prod(env_shape)
+    print("State Dim: ", state_dim)
+
     action_dim = env.action_space.n
+    n_latent_var = 1000
+    print("latent var: ", n_latent_var)
+    print("action Dim: ", action_dim)
+
     ppo = PPO(state_dim, action_dim, n_latent_var, lr, betas, gamma, K_epochs, eps_clip)
+    if(args.checkpoint):
+        print(f"Loading a policy - { args.checkpoint } ")
+        ppo.policy_network.load_state_dict(torch.load(args.checkpoint))
     print(lr,betas)
 
     # logging variables
@@ -181,7 +237,7 @@ def main():
             timestep += 1
 
             # Running policy_old:
-            action = ppo.policy_old.act(state, memory)
+            action = ppo.policy_old.act(np.array(state), memory)
             state, reward, done, _ = env.step(action)
 
             # Saving reward and is_terminal:
@@ -193,7 +249,6 @@ def main():
                 ppo.update(memory)
                 memory.clear_memory()
                 timestep = 0
-
             running_reward += reward
             if render:
                 env.render()
@@ -201,7 +256,6 @@ def main():
                 break
 
         avg_length += t
-
         # stop training if avg_reward > solved_reward
         if running_reward > (log_interval*solved_reward):
             print("########## Solved! ##########")
@@ -216,6 +270,11 @@ def main():
             print('Episode {} \t avg length: {} \t reward: {}'.format(i_episode, avg_length, running_reward))
             running_reward = 0
             avg_length = 0
+            torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(i_episode)+"_eps.pth"))
+            np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
+    torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "final_checkpoint.pth"))
+    np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
+
 
 if __name__ == '__main__':
     main()
