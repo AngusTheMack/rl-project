@@ -83,7 +83,7 @@ class ActorCritic(nn.Module):
             memory.actions.append(action)
             memory.logprobs.append(dist.log_prob(action))
 
-        return action.item()
+        return  np.argmax(action)
 
     def evaluate(self, state, action):
         action_probs = self.action_layer(state)
@@ -200,7 +200,9 @@ def main():
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,retro=True, realtime_mode=False, config=config, greyscale=True)
     env.seed(args.seed)
     env = PyTorchFrame(env)
+    env = FrameStack(env, 10)
     env = HumanActionEnv(env)
+
     memory = Memory()
     env_shape = env.observation_space.shape
     state_dim = np.prod(env_shape)
