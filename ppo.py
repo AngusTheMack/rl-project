@@ -2,6 +2,13 @@ import torch
 import torch.nn as nn
 from torch.distributions import Categorical
 import gym
+import numpy as np
+import random
+
+from dqn.agent import DQNAgent
+from dqn.replay_buffer import ReplayBuffer
+from dqn.wrappers import *
+from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, ObstacleTowerEvaluation
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -23,7 +30,7 @@ class Memory:
 class ActorCritic(nn.Module):
     def __init__(self, state_dim, action_dim, n_latent_var):
         super(ActorCritic, self).__init__()
-        self.affine = nn.Linear(state_dim, n_latent_var)
+
 
         # actor
         self.action_layer = nn.Sequential(
@@ -48,7 +55,8 @@ class ActorCritic(nn.Module):
         raise NotImplementedError
 
     def act(self, state, memory):
-        state = torch.from_numpy(state).float().to(device)
+        state = torch.from_numpy(state).float().to(device).flatten()
+
         action_probs = self.action_layer(state)
         dist = Categorical(action_probs)
         action = dist.sample()
@@ -138,7 +146,7 @@ def main():
     log_interval = 20           # print avg reward in the interval
     max_episodes = 50000        # max training episodes
     max_timesteps = 300         # max timesteps in one episode
-    n_latent_var = 64           # number of variables in hidden layer
+    n_latent_var = 2           # number of variables in hidden layer
     update_timestep = 2000      # update policy every n timesteps
     lr = 0.002
     betas = (0.9, 0.999)
@@ -156,16 +164,22 @@ def main():
               'allowed-floors': 0,
               }
     worker_id = int(np.random.randint(999, size=1))
-
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,
-                            retro=True, realtime_mode=False, config=config, greyscale=True)
+                            retro=True, realtime_mode=True, config=config, greyscale=True)
     env.seed(random_seed)
     env = PyTorchFrame(env)
-    env = FrameStack(env, 10)
+    env = FrameStack(env, 1)
     memory = Memory()
-    print(env.observation_space.shape)
-    state_dim = 7056
+    env_shape = env.observation_space.shape
+
+    state_dim = np.prod(env_shape)
+    print("State Dim: ", state_dim)
+
     action_dim = env.action_space.n
+    n_latent_var = 1000
+    print("latent var: ", n_latent_var)
+    print("action Dim: ", action_dim)
+
     ppo = PPO(state_dim, action_dim, n_latent_var, lr, betas, gamma, K_epochs, eps_clip)
     print(lr,betas)
 
@@ -181,7 +195,7 @@ def main():
             timestep += 1
 
             # Running policy_old:
-            action = ppo.policy_old.act(state, memory)
+            action = ppo.policy_old.act(np.array(state), memory)
             state, reward, done, _ = env.step(action)
 
             # Saving reward and is_terminal:
@@ -193,7 +207,6 @@ def main():
                 ppo.update(memory)
                 memory.clear_memory()
                 timestep = 0
-
             running_reward += reward
             if render:
                 env.render()
