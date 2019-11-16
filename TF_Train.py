@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('--checkpoint', type=str, default=None, help='Where checkpoint file if its a directory, then loads the most recent - otherwise loads the model')
     parser.add_argument('--seed', type=int, default=42, help='Random seed for training')
     parser.add_argument('--lr',type=float,default=(5 * 10e-5),help="learning rate")
-    parser.add_argument('--save_freq',type=int, default=10, help="Save model after n episodes")
+    parser.add_argument('--save_freq',type=int, default=50, help="Save model after n episodes")
     args = parser.parse_args()
 
     # Make a new directory to not overwrite prev results
@@ -135,6 +135,9 @@ if __name__ == "__main__":
             if score > max_score:
                 max_score = score
                 max_score_tracker.append(max_score)
+                name = os.path.join(save_loc, "best")
+                checkpoint_saver.save(sess, name, global_step=0)
+                print("Saved new best episode after",episode_counter,"episodes")
             next_state_values = state_values[1:] + [0]
             GAEs, deltas = get_gaes(rewards, state_values, next_state_values, GAMMA, LAMBDA)
 
