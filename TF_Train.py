@@ -32,6 +32,7 @@ if __name__ == "__main__":
     parser.add_argument('--seed', type=int, default=42, help='Random seed for training')
     parser.add_argument('--lr',type=float,default=(5 * 10e-5),help="learning rate")
     parser.add_argument('--save_freq',type=int, default=50, help="Save model after n episodes")
+    parser.add_argument('--k_epochs', type=int, default=2, help="The number of epochs to actor-critic for")
     args = parser.parse_args()
 
     # Make a new directory to not overwrite prev results
@@ -118,7 +119,7 @@ if __name__ == "__main__":
     rewards = []
 
     # Number of epochs for PPO and batch size
-    epochs = 2
+    epochs = args.k_epochs
     batch_size = 64
 
     # Some performance stats to keep track of
