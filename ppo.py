@@ -176,7 +176,7 @@ def main():
     print("Saving results to", dir_to_make)
     ############## Hyperparameters ##############
     solved_reward = 230         # stop training if avg_reward > solved_reward
-    log_interval = 50      # print avg reward in the interval
+    log_interval = 5      # print avg reward in the interval
     max_episodes = 50000        # max training episodes
     max_timesteps = 512         # max timesteps in one episode
     n_latent_var = 2           # number of variables in hidden layer
