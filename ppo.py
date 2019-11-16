@@ -52,9 +52,9 @@ class ActorCritic(nn.Module):
         # actor
         self.action_layer = nn.Sequential(
                 nn.Linear(state_dim, n_latent_var),
-                nn.Tanh(),
+                nn.ReLU(),
                 nn.Linear(n_latent_var, n_latent_var),
-                nn.Tanh(),
+                nn.ReLU(),
                 nn.Linear(n_latent_var, action_dim),
                 nn.Softmax(dim=-1)
                 )
@@ -181,7 +181,7 @@ def main():
     action_dim = 4
     render = False
     solved_reward = 230         # stop training if avg_reward > solved_reward
-    log_interval = 20           # print avg reward in the interval
+    log_interval = 5           # print avg reward in the interval
     max_episodes = 50000        # max training episodes
     max_timesteps = 300         # max timesteps in one episode
     n_latent_var = 2           # number of variables in hidden layer
@@ -191,11 +191,11 @@ def main():
     gamma = 0.99                # discount factor
     K_epochs = 4                # update policy for K epochs
     eps_clip = 0.2              # clip parameter for PPO
-    random_seed = None
+    random_seed = args.seed
     #############################################
 
-    np.random.seed(random_seed)
-    random.seed(random_seed)
+    np.random.seed(args.seed)
+    random.seed(args.seed)
     config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 1,
               'lighting-type': 0, 'visual-theme': 0, 'default-theme': 0, 'agent-perspective': 1, 'allowed-rooms': 0,
               'allowed-modules': 0,
@@ -204,9 +204,9 @@ def main():
     worker_id = int(np.random.randint(999, size=1))
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,
                             retro=True, realtime_mode=False, config=config, greyscale=True)
-    env.seed(random_seed)
+    env.seed(args.seed)
     env = PyTorchFrame(env)
-    # env = FrameStack(env, 1)
+    env = FrameStack(env, 5)
     env = HumanActionEnv(env)
     memory = Memory()
     env_shape = env.observation_space.shape
@@ -222,7 +222,7 @@ def main():
     ppo = PPO(state_dim, action_dim, n_latent_var, lr, betas, gamma, K_epochs, eps_clip)
     if(args.checkpoint):
         print(f"Loading a policy - { args.checkpoint } ")
-        ppo.policy_network.load_state_dict(torch.load(args.checkpoint))
+        ppo.policy.load_state_dict(torch.load(args.checkpoint))
     print(lr,betas)
 
     # logging variables
@@ -270,10 +270,10 @@ def main():
             print('Episode {} \t avg length: {} \t reward: {}'.format(i_episode, avg_length, running_reward))
             running_reward = 0
             avg_length = 0
-            torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(i_episode)+"_eps.pth"))
-            np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
-    torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "final_checkpoint.pth"))
-    np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
+            torch.save(ppo.policy.state_dict(), os.path.join(save_loc, "checkpoint_"+str(i_episode)+"_eps.pth"))
+            # np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
+    torch.save(ppo.policy.state_dict(), os.path.join(save_loc, "final_checkpoint.pth"))
+    # np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
 
 
 if __name__ == '__main__':
