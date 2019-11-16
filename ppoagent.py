@@ -9,7 +9,7 @@ import gym
 from ppo import PPO
 device = torch.device("cpu")
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-HUMAN_ACTIONS = (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33)
+HUMAN_ACTIONS = (18, 19, 20, 21, 22, 23, 24)
 NUM_ACTIONS = len(HUMAN_ACTIONS)
 
 
@@ -37,7 +37,7 @@ class MyAgent(AbstractAgent):
             eps_clip=0.2,
         )
         self.actions = HUMAN_ACTIONS
-        self.agent.policy.load_state_dict(torch.load("model.pth",map_location=torch.device(device)))
+        self.agent.policy.load_state_dict(torch.load("results/experiment_46/checkpoint_240_eps.pth",map_location=torch.device(device)))
 
     def act(self, observation):
         observation = cv2.cvtColor(observation, cv2.COLOR_RGB2GRAY)

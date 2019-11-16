@@ -12,9 +12,10 @@ from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, Obs
 import os
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-
-HUMAN_ACTIONS = (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33)
+HUMAN_ACTIONS = (18, 6, 12, 36, 24, 30)
 NUM_ACTIONS = len(HUMAN_ACTIONS)
+
+
 class HumanActionEnv(gym.ActionWrapper):
     """
     An environment wrapper that limits the action space to
@@ -174,56 +175,41 @@ def main():
     save_loc = dir_to_make+"/"
     print("Saving results to", dir_to_make)
     ############## Hyperparameters ##############
-    env_name = "LunarLander-v2"
-    # creating environment
-
-    # state_dim = env.observation_space.shape[0]
-    action_dim = 4
-    render = False
     solved_reward = 230         # stop training if avg_reward > solved_reward
-    log_interval = 20      # print avg reward in the interval
+    log_interval = 50      # print avg reward in the interval
     max_episodes = 50000        # max training episodes
-    max_timesteps = 300         # max timesteps in one episode
+    max_timesteps = 512         # max timesteps in one episode
     n_latent_var = 2           # number of variables in hidden layer
-    update_timestep = 2000      # update policy every n timesteps
-    lr = 0.002
+    update_timestep = 1024      # update policy every n timesteps
+    lr = 0.0004
     betas = (0.9, 0.999)
     gamma = 0.99                # discount factor
-    K_epochs = 4                # update policy for K epochs
+    K_epochs = 8                # update policy for K epochs
     eps_clip = 0.2              # clip parameter for PPO
     random_seed = args.seed
     #############################################
 
-    np.random.seed(args.seed)
-    random.seed(args.seed)
+    np.random.seed(random_seed)
+    random.seed(random_seed)
     config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 1,
               'lighting-type': 0, 'visual-theme': 0, 'default-theme': 0, 'agent-perspective': 1, 'allowed-rooms': 0,
               'allowed-modules': 0,
               'allowed-floors': 0,
               }
     worker_id = int(np.random.randint(999, size=1))
-    env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,
-                            retro=True, realtime_mode=True, config=config, greyscale=True)
+    env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,retro=True, realtime_mode=False, config=config, greyscale=True)
     env.seed(args.seed)
     env = PyTorchFrame(env)
-    # env = FrameStack(env, 5)
     env = HumanActionEnv(env)
     memory = Memory()
     env_shape = env.observation_space.shape
-
     state_dim = np.prod(env_shape)
-    print("State Dim: ", state_dim)
-
     action_dim = env.action_space.n
-    n_latent_var = 1000
-    print("latent var: ", n_latent_var)
-    print("action Dim: ", action_dim)
-
+    n_latent_var = 1000s
     ppo = PPO(state_dim, action_dim, n_latent_var, lr, betas, gamma, K_epochs, eps_clip)
     if(args.checkpoint):
         print(f"Loading a policy - { args.checkpoint } ")
         ppo.policy.load_state_dict(torch.load(args.checkpoint))
-    print(lr,betas)
 
     # logging variables
     running_reward = 0
@@ -271,9 +257,8 @@ def main():
             running_reward = 0
             avg_length = 0
             torch.save(ppo.policy.state_dict(), os.path.join(save_loc, "checkpoint_"+str(i_episode)+"_eps.pth"))
-            # np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
+            print("Saved models after",i_episode)
     torch.save(ppo.policy.state_dict(), os.path.join(save_loc, "final_checkpoint.pth"))
-    # np.savetxt(os.path.join(save_loc,"rewards.csv"), running_reward, delimiter=",")
 
 
 if __name__ == '__main__':
