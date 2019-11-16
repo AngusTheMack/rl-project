@@ -181,7 +181,7 @@ def main():
     action_dim = 4
     render = False
     solved_reward = 230         # stop training if avg_reward > solved_reward
-    log_interval = 5           # print avg reward in the interval
+    log_interval = 20      # print avg reward in the interval
     max_episodes = 50000        # max training episodes
     max_timesteps = 300         # max timesteps in one episode
     n_latent_var = 2           # number of variables in hidden layer
@@ -203,7 +203,7 @@ def main():
               }
     worker_id = int(np.random.randint(999, size=1))
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,
-                            retro=True, realtime_mode=False, config=config, greyscale=True)
+                            retro=True, realtime_mode=True, config=config, greyscale=True)
     env.seed(args.seed)
     env = PyTorchFrame(env)
     # env = FrameStack(env, 5)
