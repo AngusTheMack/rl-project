@@ -52,7 +52,7 @@ class ActorCritic(nn.Module):
 
         # actor
         self.action_layer = nn.Sequential(
-                nn.Conv2d(10, n_latent_var, 84),
+                nn.Linear(state_dim, n_latent_var),
                 nn.ReLU(),
                 nn.Linear(n_latent_var, n_latent_var),
                 nn.ReLU(),
@@ -73,7 +73,7 @@ class ActorCritic(nn.Module):
         raise NotImplementedError
 
     def act(self, state, memory=None):
-        state = torch.from_numpy(state).float().to(device).reshape(1, 10, 84, 84)
+        state = torch.from_numpy(state).float().to(device).flatten()
 
         action_probs = self.action_layer(state)
         dist = Categorical(action_probs)
@@ -83,10 +83,9 @@ class ActorCritic(nn.Module):
             memory.actions.append(action)
             memory.logprobs.append(dist.log_prob(action))
 
-        return  np.argmax(action.cpu())
+        return  action.cpu()
 
     def evaluate(self, state, action):
-        print(state.shape)
         action_probs = self.action_layer(state)
         dist = Categorical(action_probs)
 
@@ -157,7 +156,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='PPO Atari')
     parser.add_argument('--checkpoint', type=str, default=None, help='Where checkpoint file should be loaded from (usually results/checkpoint.pth)')
-    parser.add_argument('--seed', type=int, default=42, help='Random seed for training')
+    parser.add_argument('--seed', type=int, default=419, help='Random seed for training')
     parser.add_argument('--lr',type=float,default=1e-4,help="learning rate")
     # parser.add_argument('--continue', action='store_true')
     args = parser.parse_args()
@@ -180,25 +179,26 @@ def main():
     log_interval = 5      # print avg reward in the interval
     max_episodes = 50000        # max training episodes
     max_timesteps = 512         # max timesteps in one episode
-    n_latent_var = 2           # number of variables in hidden layer
+    n_latent_var = 32           # number of variables in hidden layer
     update_timestep = 1024      # update policy every n timesteps
-    lr = 0.0004
+    lr = 0.1
     betas = (0.9, 0.999)
-    gamma = 0.99                # discount factor
+    gamma = 0.7                # discount factor
     K_epochs = 8                # update policy for K epochs
     eps_clip = 0.2              # clip parameter for PPO
     random_seed = args.seed
     #############################################
 
-    np.random.seed(random_seed)
+    # np.random.seed(random_seed)
     random.seed(random_seed)
-    config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 1,
+    config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 10,
               'lighting-type': 0, 'visual-theme': 0, 'default-theme': 0, 'agent-perspective': 1, 'allowed-rooms': 0,
               'allowed-modules': 0,
               'allowed-floors': 0,
               }
     worker_id = int(np.random.randint(999, size=1))
-    env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,retro=True, realtime_mode=False, config=config, greyscale=True)
+    env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id,retro=True,
+                            realtime_mode=False, config=config, greyscale=True)
     env.seed(args.seed)
     env = PyTorchFrame(env)
     env = FrameStack(env, 10)
@@ -208,7 +208,7 @@ def main():
     env_shape = env.observation_space.shape
     state_dim = np.prod(env_shape)
     action_dim = env.action_space.n
-    n_latent_var = 1
+    n_latent_var = 600
     ppo = PPO(state_dim, action_dim, n_latent_var, lr, betas, gamma, K_epochs, eps_clip)
     if(args.checkpoint):
         print(f"Loading a policy - { args.checkpoint } ")

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     eval_seeds = [1, 2, 3, 4, 5]
 
     # Create the ObstacleTowerEnv gym and launch ObstacleTower
-    config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 1,
+    config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 10,
               'lighting-type': 0, 'visual-theme': 0, 'default-theme': 0, 'agent-perspective': 1, 'allowed-rooms': 0,
               'allowed-modules': 0,
               'allowed-floors': 0,
