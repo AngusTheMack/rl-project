@@ -71,16 +71,16 @@ class ActorCritic(nn.Module):
     def forward(self):
         raise NotImplementedError
 
-    def act(self, state, memory):
+    def act(self, state, memory=None):
         state = torch.from_numpy(state).float().to(device).flatten()
 
         action_probs = self.action_layer(state)
         dist = Categorical(action_probs)
         action = dist.sample()
-
-        memory.states.append(state)
-        memory.actions.append(action)
-        memory.logprobs.append(dist.log_prob(action))
+        if memory is not None:
+            memory.states.append(state)
+            memory.actions.append(action)
+            memory.logprobs.append(dist.log_prob(action))
 
         return action.item()
 
@@ -206,7 +206,7 @@ def main():
                             retro=True, realtime_mode=False, config=config, greyscale=True)
     env.seed(args.seed)
     env = PyTorchFrame(env)
-    env = FrameStack(env, 5)
+    # env = FrameStack(env, 5)
     env = HumanActionEnv(env)
     memory = Memory()
     env_shape = env.observation_space.shape
