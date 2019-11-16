@@ -1,5 +1,5 @@
 from AbstractAgent import AbstractAgent
-
+import numpy as np
 
 from dqn.agent import DQNAgent
 from dqn.wrappers import *
@@ -36,7 +36,7 @@ class MyAgent(AbstractAgent):
             eps_clip=0.2,
         )
         self.actions = HUMAN_ACTIONS
-        self.agent.policy.load_state_dict(torch.load("results/experiment_0/checkpoint_25_eps.pth",map_location=torch.device(device)))
+        self.agent.policy.load_state_dict(torch.load("results/experiment_1/checkpoint_210_eps.pth",map_location=torch.device(device)))
         self.framestack = None
 
 

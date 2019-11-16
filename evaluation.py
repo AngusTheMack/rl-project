@@ -5,7 +5,7 @@ import sys
 
 def run_episode(env):
     # create instance of MyAgent
-    from ppoagent import MyAgent
+    from MyAgent import MyAgent
     agent = MyAgent(env.observation_space, env.action_space)
 
     done = False
