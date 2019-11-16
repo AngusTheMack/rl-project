@@ -51,11 +51,11 @@ if __name__ == "__main__":
     hyper_params = {
         "discount-factor": 0.99,  # discount factor
         "num-steps":  15000000,  # total number of steps to run the environment for
-        "batch-size": 32,  # number of transitions to optimize at the same time
-        "learning-starts": 3000000,  # number of steps before learning starts
+        "batch-size": 64,  # number of transitions to optimize at the same time
+        "learning-starts": 500000,  # number of steps before learning starts
         "learning-freq": 1,  # number of iterations between every optimization step
         "use-double-dqn": True,  # use double deep Q-learning
-        "target-update-freq": 1000,  # number of iterations between every target network update
+        "target-update-freq": 600,  # number of iterations between every target network update
         "eps-start": 1.0,  # e-greedy start threshold
         "eps-end": 0.01,  # e-greedy end threshold
         "eps-fraction": 0.1,  # fraction of num-steps
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     env = FrameStack(env, 10)
     env = HumanActionEnv(env)
 
-    replay_buffer = ReplayBuffer(int(5e3))
+    replay_buffer = ReplayBuffer(int(5e4))
 
     agent = DQNAgent(
         env.observation_space,
@@ -122,7 +122,7 @@ if __name__ == "__main__":
             agent.update_target_network()
 
         num_episodes = len(episode_rewards)
-        if t % 100000 == 0:
+        if t % 200000 == 0:
 
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
             print("Saved Checkpoint after",t,"steps")
