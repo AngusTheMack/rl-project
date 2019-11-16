@@ -8,6 +8,25 @@ from dqn.replay_buffer import ReplayBuffer
 from dqn.wrappers import *
 import argparse
 from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, ObstacleTowerEvaluation
+
+
+
+HUMAN_ACTIONS = (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33)
+NUM_ACTIONS = len(HUMAN_ACTIONS)
+class HumanActionEnv(gym.ActionWrapper):
+    """
+    An environment wrapper that limits the action space to
+    looking left/right, jumping, and moving forward.
+    """
+
+    def __init__(self, env):
+        super().__init__(env)
+        self.actions = HUMAN_ACTIONS
+        self.action_space = gym.spaces.Discrete(len(self.actions))
+
+    def action(self, act):
+        return self.actions[act]
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='DQN Atari')
     parser.add_argument('--checkpoint', type=str, default=None, help='Where checkpoint file should be loaded from (usually results/checkpoint.pth)')
@@ -57,7 +76,8 @@ if __name__ == "__main__":
     env.seed(args.seed)
     # env = WarpFrame(env)
     env = PyTorchFrame(env)
-    env = FrameStack(env, 10)
+    # env = FrameStack(env, 10)
+    env = HumanActionEnv(env)
 
     replay_buffer = ReplayBuffer(int(5e3))
 
