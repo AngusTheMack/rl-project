@@ -205,7 +205,7 @@ def main():
     env_shape = env.observation_space.shape
     state_dim = np.prod(env_shape)
     action_dim = env.action_space.n
-    n_latent_var = 1000s
+    n_latent_var = 600
     ppo = PPO(state_dim, action_dim, n_latent_var, lr, betas, gamma, K_epochs, eps_clip)
     if(args.checkpoint):
         print(f"Loading a policy - { args.checkpoint } ")
