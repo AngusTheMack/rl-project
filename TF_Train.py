@@ -135,9 +135,10 @@ if __name__ == "__main__":
             if score > max_score:
                 max_score = score
                 max_score_tracker.append(max_score)
-                name = os.path.join(save_loc, "best")
-                checkpoint_saver.save(sess, name, global_step=0)
-                print("Saved new best episode after",episode_counter,"episodes")
+                if episode_counter not 0:
+                    name = os.path.join(save_loc, "best")
+                    checkpoint_saver.save(sess, name, global_step=0)
+                    print("Saved new best episode after",episode_counter,"episodes")
             next_state_values = state_values[1:] + [0]
             GAEs, deltas = get_gaes(rewards, state_values, next_state_values, GAMMA, LAMBDA)
 
@@ -173,7 +174,7 @@ if __name__ == "__main__":
 
             # Print out a few numbers to keep track of things
             print("Episode: {}, Score: {}, Max Score {}, Max Reward: {}".format(episode_counter, performance[-1], max_score_tracker[-1], max_reward_tracker[-1]))
-            if episode_counter % args.save_freq == 0:
+            if episode_counter % args.save_freq == 0 and episode_counter not 0:
                 name = os.path.join(save_loc, "model")
                 checkpoint_saver.save(sess, name, global_step=episode_counter)
                 print("Saved Checkpoint after",episode_counter,"episodes")
