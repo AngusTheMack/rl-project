@@ -52,7 +52,7 @@ class ActorCritic(nn.Module):
 
         # actor
         self.action_layer = nn.Sequential(
-                nn.Linear(state_dim, n_latent_var),
+                nn.Conv2d(10, n_latent_var, 84),
                 nn.ReLU(),
                 nn.Linear(n_latent_var, n_latent_var),
                 nn.ReLU(),
@@ -73,7 +73,7 @@ class ActorCritic(nn.Module):
         raise NotImplementedError
 
     def act(self, state, memory=None):
-        state = torch.from_numpy(state).float().to(device).flatten()
+        state = torch.from_numpy(state).float().to(device).reshape(1, 10, 84, 84)
 
         action_probs = self.action_layer(state)
         dist = Categorical(action_probs)
@@ -83,9 +83,10 @@ class ActorCritic(nn.Module):
             memory.actions.append(action)
             memory.logprobs.append(dist.log_prob(action))
 
-        return  np.argmax(action)
+        return  np.argmax(action.cpu())
 
     def evaluate(self, state, action):
+        print(state.shape)
         action_probs = self.action_layer(state)
         dist = Categorical(action_probs)
 
@@ -207,7 +208,7 @@ def main():
     env_shape = env.observation_space.shape
     state_dim = np.prod(env_shape)
     action_dim = env.action_space.n
-    n_latent_var = 600
+    n_latent_var = 1
     ppo = PPO(state_dim, action_dim, n_latent_var, lr, betas, gamma, K_epochs, eps_clip)
     if(args.checkpoint):
         print(f"Loading a policy - { args.checkpoint } ")
