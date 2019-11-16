@@ -49,13 +49,13 @@ if __name__ == "__main__":
     save_loc = dir_to_make+"/"
     print("Saving results to", dir_to_make)
     hyper_params = {
-        "discount-factor": 0.99,  # discount factor
-        "num-steps":  15000000,  # total number of steps to run the environment for
-        "batch-size": 64,  # number of transitions to optimize at the same time
-        "learning-starts": 500000,  # number of steps before learning starts
+        "discount-factor": 0.9,  # discount factor
+        "num-steps":  5000000,  # total number of steps to run the environment for
+        "batch-size": 32,  # number of transitions to optimize at the same time
+        "learning-starts": 10000,  # number of steps before learning starts
         "learning-freq": 1,  # number of iterations between every optimization step
         "use-double-dqn": True,  # use double deep Q-learning
-        "target-update-freq": 600,  # number of iterations between every target network update
+        "target-update-freq": 1000,  # number of iterations between every target network update
         "eps-start": 1.0,  # e-greedy start threshold
         "eps-end": 0.01,  # e-greedy end threshold
         "eps-fraction": 0.1,  # fraction of num-steps
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     env = FrameStack(env, 10)
     env = HumanActionEnv(env)
 
-    replay_buffer = ReplayBuffer(int(5e4))
+    replay_buffer = ReplayBuffer(int(5e3))
 
     agent = DQNAgent(
         env.observation_space,
@@ -98,9 +98,26 @@ if __name__ == "__main__":
     episode_rewards = [0.0]
     step_count = 0
     state = env.reset()
+
+
     for t in range(hyper_params["num-steps"]):
+        if t < 2000000:
+            eps_threshold = 0.93
+        elif t < 2500000:
+            eps_threshold = 0.85
+        elif t < 3000000:
+            eps_threshold = 0.65
+        elif t < 3500000:
+            eps_threshold = 0.6
+        elif t < 4000000:
+            eps_threshold = 0.55
+        elif t < 4500000:
+            eps_threshold = 0.45
+        else:
+            eps_threshold = 0.3
+
         fraction = min(1.0, float(t) / eps_timesteps)
-        eps_threshold = hyper_params["eps-start"] + fraction * (hyper_params["eps-end"] - hyper_params["eps-start"])
+        # eps_threshold = hyper_params["eps-start"] + fraction * (hyper_params["eps-end"] - hyper_params["eps-start"])
         sample = random.random()
         if sample > eps_threshold:
             action = agent.act(np.array(state))
@@ -122,8 +139,7 @@ if __name__ == "__main__":
             agent.update_target_network()
 
         num_episodes = len(episode_rewards)
-        if t % 200000 == 0:
-
+        if t % 250000 == 0:
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
             print("Saved Checkpoint after",t,"steps")
 
