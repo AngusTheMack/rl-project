@@ -10,9 +10,9 @@ import argparse
 from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, ObstacleTowerEvaluation
 
 
-
-HUMAN_ACTIONS = (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33)
+HUMAN_ACTIONS = (18, 6, 12, 36, 24, 30)
 NUM_ACTIONS = len(HUMAN_ACTIONS)
+
 class HumanActionEnv(gym.ActionWrapper):
     """
     An environment wrapper that limits the action space to
