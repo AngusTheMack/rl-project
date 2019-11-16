@@ -9,6 +9,7 @@ def run_episode(env):
     from MyAgent import MyAgent
 
     env = PyTorchFrame(env)
+    # env = FrameStack(env, 10)
     agent = MyAgent(env.observation_space, env.action_space)
 
     done = False
@@ -43,7 +44,6 @@ if __name__ == '__main__':
     # Wrap the environment with the ObstacleTowerEvaluation wrapper
     # and provide evaluation seeds.
     env = ObstacleTowerEvaluation(env, eval_seeds)
-
     # We can run episodes (in this case with a random policy) until
     # the "evaluation_complete" flag is True.  Attempting to step or reset after
     # all of the evaluation seeds have completed will result in an exception.

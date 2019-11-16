@@ -7,8 +7,8 @@ import numpy as np
 
 from dqn.model import DQN
 from dqn.replay_buffer import ReplayBuffer
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class DQNAgent:
@@ -93,4 +93,6 @@ class DQNAgent:
         with torch.no_grad():
             q_values = self.policy_network(state)
             _, action = q_values.max(1)
-            return action.item()
+            chosen_action = action.item()
+            # print(chosen_action)
+            return chosen_action
