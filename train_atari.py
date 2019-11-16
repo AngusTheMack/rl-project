@@ -50,12 +50,12 @@ if __name__ == "__main__":
     print("Saving results to", dir_to_make)
     hyper_params = {
         "discount-factor": 0.99,  # discount factor
-        "num-steps": int(1e6),  # total number of steps to run the environment for
-        "batch-size": 32,  # number of transitions to optimize at the same time
-        "learning-starts": 10000,  # number of steps before learning starts
+        "num-steps":  15000000,  # total number of steps to run the environment for
+        "batch-size": 64,  # number of transitions to optimize at the same time
+        "learning-starts": 500000,  # number of steps before learning starts
         "learning-freq": 1,  # number of iterations between every optimization step
         "use-double-dqn": True,  # use double deep Q-learning
-        "target-update-freq": 1000,  # number of iterations between every target network update
+        "target-update-freq": 600,  # number of iterations between every target network update
         "eps-start": 1.0,  # e-greedy start threshold
         "eps-end": 0.01,  # e-greedy end threshold
         "eps-fraction": 0.1,  # fraction of num-steps
@@ -74,12 +74,11 @@ if __name__ == "__main__":
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True, realtime_mode=False, config=config, greyscale=True)
     # assert "NoFrameskip" in hyper_params["env"], "Require environment with no frameskip"
     env.seed(args.seed)
-    # env = WarpFrame(env)
     env = PyTorchFrame(env)
-    # env = FrameStack(env, 10)
+    env = FrameStack(env, 10)
     env = HumanActionEnv(env)
 
-    replay_buffer = ReplayBuffer(int(5e3))
+    replay_buffer = ReplayBuffer(int(5e4))
 
     agent = DQNAgent(
         env.observation_space,
@@ -90,7 +89,8 @@ if __name__ == "__main__":
         batch_size=hyper_params["batch-size"],
         gamma=hyper_params["discount-factor"],
     )
-    print(env.action_space)
+
+
     if(args.checkpoint):
         print(f"Loading a policy - { args.checkpoint } ")
         agent.policy_network.load_state_dict(torch.load(args.checkpoint))
@@ -122,7 +122,7 @@ if __name__ == "__main__":
             agent.update_target_network()
 
         num_episodes = len(episode_rewards)
-        if t % 10000 == 0:
+        if t % 200000 == 0:
 
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
             print("Saved Checkpoint after",t,"steps")

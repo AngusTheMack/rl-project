@@ -40,7 +40,6 @@ if __name__ == '__main__':
     # Wrap the environment with the ObstacleTowerEvaluation wrapper
     # and provide evaluation seeds.
     print(env.unwrapped._flattener.action_lookup.items())
-    env = ObstacleTowerEvaluation(env, eval_seeds)
     # We can run episodes (in this case with a random policy) until
     # the "evaluation_complete" flag is True.  Attempting to step or reset after
     # all of the evaluation seeds have completed will result in an exception.

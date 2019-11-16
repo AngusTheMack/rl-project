@@ -19,7 +19,6 @@ class DQN(nn.Module):
         assert type(observation_space) == spaces.Box, "observation_space must be of type Box"
         assert len(observation_space.shape) == 3, "observation space must have the form channels x width x height"
         assert type(action_space) == spaces.Discrete, "action_space must be of type Discrete"
-
         self.conv1 = nn.Conv2d(observation_space.shape[0], 32, 8, stride=4)
         self.conv2 = nn.Conv2d(32, 64, 4, stride=2)
         self.conv3 = nn.Conv2d(64, 64, 3, stride=1)
