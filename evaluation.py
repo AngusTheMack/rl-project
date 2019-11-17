@@ -1,7 +1,11 @@
 from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, ObstacleTowerEvaluation
 import numpy as np
 import sys
+import argparse
 
+parser = argparse.ArgumentParser(description='Evaluation Script for Obstacle Tower')
+parser.add_argument('--realtime', default=False, action='store_true')
+args = parser.parse_args()
 
 def run_episode(env):
 
@@ -33,7 +37,7 @@ if __name__ == '__main__':
     worker_id = int(np.random.randint(999, size=1))
     print(worker_id)
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True,
-                           realtime_mode=False, config=config, greyscale=False)
+                           realtime_mode=args.realtime, config=config, greyscale=False)
     env = ObstacleTowerEvaluation(env, eval_seeds)
 
     while not env.evaluation_complete:

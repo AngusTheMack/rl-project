@@ -1,45 +1,80 @@
-# Reinforcement Learning - 2019 Assignment
+# Reinforcement Learning - Obstacle Tower Project  <!-- omit in toc -->
+- [Team](#team)
+- [Setup](#setup)
+  - [Packages](#packages)
+  - [Environment](#environment)
+    - [Environment Configuration](#environment-configuration)
+- [Evaluating](#evaluating)
+- [Training](#training)
+- [Approach](#approach)
 
-# Environment
-### Unity Obstacle Tower [[repo link](https://github.com/Unity-Technologies/obstacle-tower-env)]
 
-The Environment is available on [On Google Drive](https://drive.google.com/drive/folders/1WuoG7HncbbKOgFJ61jOHQqgSAXbm78st?usp=sharing) use your @wits email
+In this project we had to create an agent to tackle the [Obstacle Tower Challenge](https://github.com/Unity-Technologies/obstacle-tower-env).  The agent must ascend a tower, proceeding through as many floors/levels as possible. 
 
-# Packages
-- torch
-- torchvision
-- gym
-- matplotlib
-- mlagents (v0.10.1)
-- pillow
-- opencv-python
+# Team
+* Nishai Kooverjee      (135477)
+* Kenan Karavoussanos   (1348582)
+* Angus Mackenzie       (1106817)
+* Africa Khoza          (1137682)
 
-# Create Conda Env from environment.yml
+# Setup
+To run this code, you need to have the requisite packages and the environment setup. 
 
+## Packages
+To install the packages, run the following command:
+```
 conda env create -f environment.yml
-
-
-Save updated parameters to new yml file:
 ```
-conda env export > environment.yml
+Then activate the environment by running:
+```
+conda activate proj
 ```
 
-# Evaluation - MyAgent
-- The MyAgent will be evaluated
-- Initialize model within the `__init__` method
-- Return action from `act(observation)` method
+## Environment
+This project required an offshoot of the obstacle tower environment. The environment is too large for github, so we had to save it on google drive.
 
-# Run Docker for Evaluation
 
-- When initializing ObstacleTowerEvaluation env, set docker_training=True
+### Environment Configuration
 
-        cd to_root_folder
+The following configuration was laid out for us in the course:
+```
+starting-floor':        0
+total-floors':          9
+dense-reward':          1
+lighting-type':         0
+visual-theme':          0
+default-theme':         0
+agent-perspective':     1
+allowed-rooms':         0
+allowed-modules':       0
+allowed-floors':        0
+```
 
-        docker build -t assignment .
+# Evaluating
+To get an estimate of the score obtained by the agent during the marking, you can do the following.
 
-        docker run -it --rm assignment
 
-# Record Agent
-- Install ffmpeg [[Ubuntu](https://tecadmin.net/install-ffmpeg-on-linux/)] [[macOS](https://formulae.brew.sh/formula/ffmpeg#default)] [[Windows](https://www.wikihow.com/Install-FFmpeg-on-Windows)]
+Before attempting an evaluation, ensure the `MyAgent.py` file's `__init__` method has the path to load the weights from, an example follows:
+```python
+self.policy_network.load_state_dict(torch.load("checkpoints/40000.pth",map_location=torch.device(device)))
+```
+Where `"checkpoints/40000.pth"` is the location of our model's weights.
 
-        python recorder.py
+Then to run the evaluation script:
+```
+python evaluation.py --realtime
+```
+This will run the `evaluation.py` script on 5 different seeds, and will return the score gained across those runs. The `--realtime` flag indicates whether the environment will be rendered so you can watch the trial happening. If you do not want to watch the trial, and want to get the results as fast as possible, simply run the command without the `--realtime` flag. 
+
+# Training
+To train a new agent simply run:
+```
+python train_atari.py --checkpoint checkpoints/40000.pth
+```
+You can remove the `--checkpoint` flag if you want to train one from scratch and not use any pretrained weights.
+
+The above command will create a new folder, called `results/experiment_1`, and will store the rewards attained as well as checkpoints in that folder. For each new run of `train_atari.py` a new `experiment_<n>` folder will be created. 
+
+
+# Approach
+We used a Deep Q Network as the backbone of our agent. The code was largely based off one of our [previous assignments](https://github.com/AngusTheMack/dqn-pong). We used minimal wrappers, and simply trained a number of models over the course of few weeks. Often using a pretrained model's weights to initialise another model, and changing different hyperparameters along the way. We reached level 5 in the tower, and achieved a score of 40000. Considering the aim was to beat an agent with a score of 8000, we did notable well. This assignment has a [leader board](https://moodle.ms.wits.ac.za/piedranker/app/php/rankings.php?assignid=431&courseid=74) so that students can track how their agents compare against others, and some students achieved truly remarkable performance.
