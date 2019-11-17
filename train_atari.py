@@ -72,7 +72,7 @@ if __name__ == "__main__":
     worker_id = int(np.random.randint(999, size=1))
     print(worker_id)
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True,
-                            realtime_mode=True, config=config)
+                            realtime_mode=False, config=config)
     # assert "NoFrameskip" in hyper_params["env"], "Require environment with no frameskip"
     env.seed(2)
     env = PyTorchFrame(env)
@@ -143,7 +143,9 @@ if __name__ == "__main__":
         if t % 100000 == 0:
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
             print("Saved Checkpoint after",t,"steps")
-
+        if done and num_episodes%1==0:
+            torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
+            print("Saved Checkpoint after",t,"steps")
         if done and hyper_params["print-freq"] is not None and len(episode_rewards) % hyper_params["print-freq"] == 0:
             mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
             print("********************************************************")
