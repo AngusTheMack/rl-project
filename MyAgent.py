@@ -5,15 +5,15 @@ import numpy as np
 import torch
 import gym
 from ppo import PPO
-device = torch.device("cpu")
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 HUMAN_ACTIONS = (18, 6, 12, 36, 24, 30)
 NUM_ACTIONS = len(HUMAN_ACTIONS)
 
 
 class MyAgent(AbstractAgent):
     def __init__(self, observation_space, action_space):
-        self.k = 10
+        self.k = 3
         self.action_space = gym.spaces.Discrete(NUM_ACTIONS)
         shape = observation_space.shape
         self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=(self.k, shape[0], shape[1]), dtype=np.uint8)

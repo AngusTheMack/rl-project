@@ -38,7 +38,7 @@ if __name__ == "__main__":
     i = 0
     if not os.path.exists("results"):
         os.mkdir("results")
-    while True:
+    while True:True
         file_name = "results/experiment_"+str(i)
         if not os.path.exists(file_name):
             dir_to_make = file_name
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         "print-freq": 10,
     }
 
-    np.random.seed(args.seed)
+    # np.random.seed(args.seed)
     random.seed(args.seed)
     config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 1,
               'lighting-type': 0, 'visual-theme': 0, 'default-theme': 0, 'agent-perspective': 1, 'allowed-rooms': 0,
@@ -71,12 +71,13 @@ if __name__ == "__main__":
               }
     worker_id = int(np.random.randint(999, size=1))
     print(worker_id)
-    env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True, realtime_mode=False, config=config, greyscale=True)
+    env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True,
+                            realtime_mode=False, config=config)
     # assert "NoFrameskip" in hyper_params["env"], "Require environment with no frameskip"
-    env.seed(args.seed)
+    env.seed(np.random.randint(100000))
     env = PyTorchFrame(env)
-    env = FrameStack(env, 10)
-    env = HumanActionEnv(env)
+    # env = FrameStack(env, 3)
+    # env = HumanActionEnv(env)
 
     replay_buffer = ReplayBuffer(int(5e3))
 
@@ -101,20 +102,20 @@ if __name__ == "__main__":
 
 
     for t in range(hyper_params["num-steps"]):
-        if t < 2000000:
-            eps_threshold = 0.93
-        elif t < 2500000:
-            eps_threshold = 0.85
-        elif t < 3000000:
-            eps_threshold = 0.65
-        elif t < 3500000:
-            eps_threshold = 0.6
-        elif t < 4000000:
-            eps_threshold = 0.55
-        elif t < 4500000:
-            eps_threshold = 0.45
-        else:
-            eps_threshold = 0.3
+        # if t < 2000000:
+        #     eps_threshold = 0.93
+        # elif t < 2500000:
+        #     eps_threshold = 0.85
+        # elif t < 3000000:
+        #     eps_threshold = 0.65
+        # elif t < 3500000:
+        #     eps_threshold = 0.6
+        # elif t < 4000000:
+        #     eps_threshold = 0.55
+        # elif t < 4500000:
+        #     eps_threshold = 0.45
+        # else:
+        eps_threshold = 0.01
 
         fraction = min(1.0, float(t) / eps_timesteps)
         # eps_threshold = hyper_params["eps-start"] + fraction * (hyper_params["eps-end"] - hyper_params["eps-start"])
@@ -139,7 +140,7 @@ if __name__ == "__main__":
             agent.update_target_network()
 
         num_episodes = len(episode_rewards)
-        if t % 250000 == 0:
+        if t % 100000 == 0:
             torch.save(agent.policy_network.state_dict(), os.path.join(save_loc, "checkpoint_"+str(t)+"_step.pth"))
             print("Saved Checkpoint after",t,"steps")
 
