@@ -24,10 +24,10 @@ if __name__ == '__main__':
     error_occurred = False
     # In this example we use the seeds used for evaluating submissions
     # to the Obstacle Tower Challenge.
-    eval_seeds = [1, 2, 3, 4, 5]
+    eval_seeds = [42, 2, 3, 4, 5]
 
     # Create the ObstacleTowerEnv gym and launch ObstacleTower
-    config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 10,
+    config = {'starting-floor': 0, 'total-floors': 9, 'dense-reward': 1,
               'lighting-type': 0, 'visual-theme': 0, 'default-theme': 0, 'agent-perspective': 1, 'allowed-rooms': 0,
               'allowed-modules': 0,
               'allowed-floors': 0,
@@ -35,11 +35,10 @@ if __name__ == '__main__':
     worker_id = int(np.random.randint(999, size=1))
     print(worker_id)
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True,
-                           realtime_mode=True, config=config, greyscale=False)
-
+                           realtime_mode=False, config=config, greyscale=False)
+    env = ObstacleTowerEvaluation(env, eval_seeds)
     # Wrap the environment with the ObstacleTowerEvaluation wrapper
     # and provide evaluation seeds.
-    print(env.unwrapped._flattener.action_lookup.items())
     # We can run episodes (in this case with a random policy) until
     # the "evaluation_complete" flag is True.  Attempting to step or reset after
     # all of the evaluation seeds have completed will result in an exception.

@@ -38,7 +38,7 @@ if __name__ == "__main__":
     i = 0
     if not os.path.exists("results"):
         os.mkdir("results")
-    while True:True
+    while True:
         file_name = "results/experiment_"+str(i)
         if not os.path.exists(file_name):
             dir_to_make = file_name
@@ -72,9 +72,9 @@ if __name__ == "__main__":
     worker_id = int(np.random.randint(999, size=1))
     print(worker_id)
     env = ObstacleTowerEnv('./ObstacleTower/obstacletower', docker_training=False, worker_id=worker_id, retro=True,
-                            realtime_mode=False, config=config)
+                            realtime_mode=True, config=config)
     # assert "NoFrameskip" in hyper_params["env"], "Require environment with no frameskip"
-    env.seed(np.random.randint(100000))
+    env.seed(2)
     env = PyTorchFrame(env)
     # env = FrameStack(env, 3)
     # env = HumanActionEnv(env)
