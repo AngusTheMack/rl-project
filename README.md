@@ -11,6 +11,7 @@
 - [Evaluating](#evaluating)
 - [Training](#training)
 - [Approach](#approach)
+- [Alternative Methods](#alternative-methods)
 
 
 In this project we had to create an agent to tackle the [Obstacle Tower Challenge](https://github.com/Unity-Technologies/obstacle-tower-env).  The agent must ascend a tower, proceeding through as many floors/levels as possible.
@@ -84,3 +85,12 @@ The above command will create a new folder, called `results/experiment_1`, and w
 
 # Approach
 We used a Deep Q Network as the backbone of our agent. The code was largely based off one of our [previous assignments](https://github.com/AngusTheMack/dqn-pong). We used minimal wrappers, and simply trained a number of models over the course of few weeks. Often using a pretrained model's weights to initialise another model, and changing different hyperparameters along the way. We reached level 5 in the tower, and achieved a score of 40000. Considering the aim was to beat an agent with a score of 8000, we did notably well. This assignment has a [leader board](https://moodle.ms.wits.ac.za/piedranker/app/php/rankings.php?assignid=431&courseid=74) so that students can track how their agents compare against others, and some students achieved truly remarkable performance.
+
+
+# Alternative Methods
+We tried a few different methods before our DQN model achieved good results. Such as:
+* Tensorflow based PPO
+* PyTorch PPO
+* Random Agent
+
+You can view them in the `alt_methods` directory

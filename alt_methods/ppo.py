@@ -14,7 +14,10 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 HUMAN_ACTIONS = (18, 6, 12, 36, 24, 30)
 NUM_ACTIONS = len(HUMAN_ACTIONS)
-
+"""
+PPO Implementation from Github
+@see https://github.com/nikhilbarhate99/PPO-PyTorch
+"""
 
 class HumanActionEnv(gym.ActionWrapper):
     """

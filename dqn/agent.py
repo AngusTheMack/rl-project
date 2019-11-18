@@ -94,5 +94,4 @@ class DQNAgent:
             q_values = self.policy_network(state)
             _, action = q_values.max(1)
             chosen_action = action.item()
-            # print(chosen_action)
             return chosen_action

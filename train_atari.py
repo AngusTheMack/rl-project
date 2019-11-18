@@ -87,7 +87,7 @@ if __name__ == "__main__":
         gamma=hyper_params["discount-factor"],
     )
 
-    # If we have prereained weights, load them
+    # If we have pretrained weights, load them
     if(args.checkpoint):
         print(f"Loading a policy - { args.checkpoint } ")
         agent.policy_network.load_state_dict(torch.load(args.checkpoint))

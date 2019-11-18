@@ -1,6 +1,10 @@
 import numpy as np
 import tensorflow as tf
 import os
+"""
+Attempted a Tensorflow based PPO from the following Github Repository:
+@see https://github.com/brandinho/Super-Mario-Bros-PPO
+"""
 class PPO():
     def __init__(self, sess, image_height, image_width, image_channels, output_dimension, timesteps, _clip_value, _lr, _gamma, _lambda):
         self.sess = sess

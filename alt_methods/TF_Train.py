@@ -11,7 +11,10 @@ from environments.obstacle_tower.obstacle_tower_env import ObstacleTowerEnv, Obs
 from wrappers import *
 from ModelPPO import PPO
 
-
+"""
+Attempted a Tensorflow based PPO from the following Github Repository:
+@see https://github.com/brandinho/Super-Mario-Bros-PPO
+"""
 ### Global Variables
 # Select actions as described by @see
 HUMAN_ACTIONS = (18, 6, 12, 36, 24, 30)

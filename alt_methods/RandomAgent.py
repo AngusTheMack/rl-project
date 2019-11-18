@@ -1,5 +1,7 @@
 from AbstractAgent import AbstractAgent
-
+"""
+Default Agent supplied by our course
+"""
 
 class RandomAgent(AbstractAgent):
     def __init__(self, observation_space, action_space):
