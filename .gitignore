@@ -56,7 +56,6 @@ Thumbs.db
 
 __pycache__
 
-environments/
 *.tar.xz
 ObstacleTower
 results/*

@@ -9,7 +9,7 @@
 - [Approach](#approach)
 
 
-In this project we had to create an agent to tackle the [Obstacle Tower Challenge](https://github.com/Unity-Technologies/obstacle-tower-env).  The agent must ascend a tower, proceeding through as many floors/levels as possible. 
+In this project we had to create an agent to tackle the [Obstacle Tower Challenge](https://github.com/Unity-Technologies/obstacle-tower-env).  The agent must ascend a tower, proceeding through as many floors/levels as possible.
 
 # Team
 * Nishai Kooverjee      (135477)
@@ -18,7 +18,7 @@ In this project we had to create an agent to tackle the [Obstacle Tower Challeng
 * Africa Khoza          (1137682)
 
 # Setup
-To run this code, you need to have the requisite packages and the environment setup. 
+To run this code, you need to have the requisite packages and the environment setup.
 
 ## Packages
 To install the packages, run the following command:
@@ -31,8 +31,10 @@ conda activate proj
 ```
 
 ## Environment
-This project required an offshoot of the obstacle tower environment. The environment is too large for github, so we had to save it on google drive.
-
+This project required an offshoot of the obstacle tower environment. The environment is too large for github, so we had to save it on google drive. Download the `ObstacleTower.zip` file from [Google Drive](https://drive.google.com/open?id=1LYwM_Qnn7mhRadTO8g9thmSbIxXmRGpu), and then unzip it into the repository's directory. You will likely need to change the permissions in order to make it executable, you can do this by running the following in the repository directory.
+```
+chmod -R 755 ./ObstacleTower/obstacletower.x86_64
+```
 
 ### Environment Configuration
 
@@ -64,7 +66,7 @@ Then to run the evaluation script:
 ```
 python evaluation.py --realtime
 ```
-This will run the `evaluation.py` script on 5 different seeds, and will return the score gained across those runs. The `--realtime` flag indicates whether the environment will be rendered so you can watch the trial happening. If you do not want to watch the trial, and want to get the results as fast as possible, simply run the command without the `--realtime` flag. 
+This will run the `evaluation.py` script on 5 different seeds, and will return the score gained across those runs. The `--realtime` flag indicates whether the environment will be rendered so you can watch the trial happening. If you do not want to watch the trial, and want to get the results as fast as possible, simply run the command without the `--realtime` flag.
 
 # Training
 To train a new agent simply run:
@@ -73,7 +75,7 @@ python train_atari.py --checkpoint checkpoints/40000.pth
 ```
 You can remove the `--checkpoint` flag if you want to train one from scratch and not use any pretrained weights.
 
-The above command will create a new folder, called `results/experiment_1`, and will store the rewards attained as well as checkpoints in that folder. For each new run of `train_atari.py` a new `experiment_<n>` folder will be created. 
+The above command will create a new folder, called `results/experiment_1`, and will store the rewards attained as well as checkpoints in that folder. For each new run of `train_atari.py` a new `experiment_<n>` folder will be created.
 
 
 # Approach
