@@ -1,7 +1,7 @@
 
 
 # Reinforcement Learning - Obstacle Tower Challenge  <!-- omit in toc -->
-![alt text](banner.png "Obstacle Tower")
+![alt text](banner.png)
 
 - [Team](#team)
 - [Setup](#setup)
