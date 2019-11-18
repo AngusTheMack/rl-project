@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Reinforcement Learning - Obstacle Tower Challenge  <!-- omit in toc --></title>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        
+    </head>
+    <body class="vscode-light">
+        <h1 id="reinforcement-learning---obstacle-tower-challenge----omit-in-toc">Reinforcement Learning - Obstacle Tower Challenge  <!-- omit in toc --></h1>
+<p><img src="file:////home/angus/Code/rl-project/banner.png" alt="alt text" title="Obstacle Tower"></p>
+<ul>
+<li><a href="#team">Team</a></li>
+<li><a href="#setup">Setup</a>
+<ul>
+<li><a href="#packages">Packages</a></li>
+<li><a href="#environment">Environment</a>
+<ul>
+<li><a href="#environment-configuration">Environment Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#evaluating">Evaluating</a></li>
+<li><a href="#training">Training</a></li>
+<li><a href="#approach">Approach</a></li>
+<li><a href="#alternative-methods">Alternative Methods</a></li>
+</ul>
+<p>In this project we had to create an agent to tackle the <a href="https://github.com/Unity-Technologies/obstacle-tower-env">Obstacle Tower Challenge</a>.  The agent must ascend a tower, proceeding through as many floors/levels as possible.</p>
+<h1 id="team">Team</h1>
+<ul>
+<li>Nishai Kooverjee      (135477)</li>
+<li>Kenan Karavoussanos   (1348582)</li>
+<li>Angus Mackenzie       (1106817)</li>
+<li>Africa Khoza          (1137682)</li>
+</ul>
+<h1 id="setup">Setup</h1>
+<p>To run this code, you need to have the requisite packages and the environment setup.</p>
+<h2 id="packages">Packages</h2>
+<p>To install the packages, run the following command:</p>
+<pre><code><div>conda env create -f environment.yml
+</div></code></pre>
+<p>Then activate the environment by running:</p>
+<pre><code><div>conda activate proj
+</div></code></pre>
+<h2 id="environment">Environment</h2>
+<p>This project required an offshoot of the obstacle tower environment. The environment is too large for github, so we had to save it on google drive. Download the <code>ObstacleTower.zip</code> file from <a href="https://drive.google.com/open?id=1LYwM_Qnn7mhRadTO8g9thmSbIxXmRGpu">Google Drive</a>, and then unzip it into the repository's directory. You will likely need to change the permissions in order to make it executable, you can do this by running the following in the repository directory.</p>
+<pre><code><div>chmod -R 755 ./ObstacleTower/obstacletower.x86_64
+</div></code></pre>
+<h3 id="environment-configuration">Environment Configuration</h3>
+<p>The following configuration was laid out for us in the course:</p>
+<pre><code><div>starting-floor':        0
+total-floors':          9
+dense-reward':          1
+lighting-type':         0
+visual-theme':          0
+default-theme':         0
+agent-perspective':     1
+allowed-rooms':         0
+allowed-modules':       0
+allowed-floors':        0
+</div></code></pre>
+<h1 id="evaluating">Evaluating</h1>
+<p>To get an estimate of the score obtained by the agent during the marking, you can do the following.</p>
+<p>Before attempting an evaluation, ensure the <code>MyAgent.py</code> file's <code>__init__</code> method has the path to load the weights from, an example follows:</p>
+<pre><code class="language-python"><div>self.policy_network.load_state_dict(torch.load(<span class="hljs-string">"checkpoints/40000.pth"</span>,map_location=torch.device(device)))
+</div></code></pre>
+<p>Where <code>&quot;checkpoints/40000.pth&quot;</code> is the location of our model's weights.</p>
+<p>Then to run the evaluation script:</p>
+<pre><code><div>python evaluation.py --realtime
+</div></code></pre>
+<p>This will run the <code>evaluation.py</code> script on 5 different seeds, and will return the score gained across those runs. The <code>--realtime</code> flag indicates whether the environment will be rendered so you can watch the trial happening. If you do not want to watch the trial, and want to get the results as fast as possible, simply run the command without the <code>--realtime</code> flag.</p>
+<h1 id="training">Training</h1>
+<p>To train a new agent simply run:</p>
+<pre><code><div>python train_atari.py --checkpoint checkpoints/40000.pth
+</div></code></pre>
+<p>You can remove the <code>--checkpoint</code> flag if you want to train one from scratch and not use any pretrained weights.</p>
+<p>The above command will create a new folder, called <code>results/experiment_1</code>, and will store the rewards attained as well as checkpoints in that folder. For each new run of <code>train_atari.py</code> a new <code>experiment_&lt;n&gt;</code> folder will be created.</p>
+<h1 id="approach">Approach</h1>
+<p>We used a Deep Q Network as the backbone of our agent. The code was largely based off one of our <a href="https://github.com/AngusTheMack/dqn-pong">previous assignments</a>. We used minimal wrappers, and simply trained a number of models over the course of few weeks. Often using a pretrained model's weights to initialise another model, and changing different hyperparameters along the way. We reached level 5 in the tower, and achieved a score of 40000. Considering the aim was to beat an agent with a score of 8000, we did notably well. This assignment has a <a href="https://moodle.ms.wits.ac.za/piedranker/app/php/rankings.php?assignid=431&amp;courseid=74">leader board</a> so that students can track how their agents compare against others, and some students achieved truly remarkable performance.</p>
+<h1 id="alternative-methods">Alternative Methods</h1>
+<p>We tried a few different methods before our DQN model achieved good results. Such as:</p>
+<ul>
+<li>Tensorflow based PPO</li>
+<li>PyTorch PPO</li>
+<li>Random Agent</li>
+</ul>
+<p>You can view them in the <code>alt_methods</code> directory</p>
+
+    </body>
+    </html>
