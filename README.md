@@ -1,6 +1,6 @@
 
 
-# Reinforcement Learning - Unity Obstacle Tower Challenge  <!-- omit in toc -->
+# Reinforcement Learning - Obstacle Tower Challenge  <!-- omit in toc -->
 ![alt text](banner.png "Obstacle Tower")
 
 - [Team](#team)
